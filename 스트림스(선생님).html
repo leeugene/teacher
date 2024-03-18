@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Random Card Picker with Roulette Effect</title>
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+        }
+        #cardDisplay {
+            width: 15cm;
+            height: 15cm;
+            border: 2px solid blue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20em;    
+            margin-right: 20px;
+        }
+        .streamInfo {
+            font-size: 2em;
+        }
+        .cardHistory {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .cardHistory div {
+            width: 3cm;
+            height: 3cm;
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 7em;
+        }
+        button {
+            font-size: 3em;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-right: 20px; /* Added margin between buttons */
+        }
+        #totalCards {
+            font-size: 3em;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="pickCard()">Pick a Card</button>
+    <button onclick="resetGame()">Reset Game</button> <!-- New reset button -->
+    <div class="container">
+        <div id="cardDisplay"></div>
+        <div class="streamInfo">Streams game with 유진티쳐</div>
+    </div>
+    <div id="totalCards">Total cards picked: 0</div>
+    <div class="cardHistory" id="cardHistory"></div>
+    <script>
+        let originalCards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, '★'];
+        let cards = [...originalCards]; // Use a copy of the original cards
+        let history = [];
+
+        function pickCard() {
+            if (history.length >= 20) {
+                alert('Game Over');
+                return; // Stops the function if 20 cards have been picked
+            }
+
+            const suspenseAudio = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_04069f0884.mp3');
+            suspenseAudio.play();
+            let count = 0;
+            const interval = setInterval(() => {
+                document.getElementById('cardDisplay').innerText = cards[Math.floor(Math.random() * cards.length)];
+                count++;
+                if (count > 15) {
+                    clearInterval(interval);
+                    suspenseAudio.pause();
+                    finalPick();
+                }
+            }, 100);
+        }
+
+        function finalPick() {
+            if (cards.length > 0) {
+                const index = Math.floor(Math.random() * cards.length);
+                const pickedCard = cards[index];
+                document.getElementById('cardDisplay').innerText = pickedCard;
+                cards.splice(index, 1);
+                history.push(pickedCard);
+                document.getElementById('totalCards').innerText = "Total cards picked: " + history.length;
+                updateHistory();
+                if (history.length >= 20) {
+                    setTimeout(() => alert('Game Over'), 100);
+                }
+            } else {
+                document.getElementById('cardDisplay').innerText = "No more cards!";
+            }
+        }
+
+        function updateHistory() {
+            const historyElement = document.getElementById('cardHistory');
+            historyElement.innerHTML = '';
+            history.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.innerText = card;
+                historyElement.appendChild(cardElement);
+            });
+        }
+
+        function resetGame() {
+            cards = [...originalCards]; // Reset the cards array to its original state
+            history = []; // Clear the history array
+            document.getElementById('totalCards').innerText = "Total cards picked: 0"; // Reset the text
+            document.getElementById('cardDisplay').innerText = ''; // Clear the main display
+            updateHistory(); // Clear the history display
+        }
+    </script>
+</body>
+</html>
